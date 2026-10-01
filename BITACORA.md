@@ -31,3 +31,29 @@
   → Instalé Python 3.12 sin borrar el del sistema.
 - **No veía `.venv` ni `.gitignore` en Finder.**
   → macOS esconde los archivos que empiezan con punto. En VS Code sí aparecen.
+
+## Día 2: Claude Code, API y Git
+
+### Qué hice
+- Creé mi cuenta en la **Claude Console**, cargué USD 5 de crédito y dejé
+  **apagada la recarga automática** (para no gastar de más).
+- Instalé **Claude Code** con el instalador oficial (`curl`) e inicié sesión
+  con mi **plan Pro** (no con la Console, para no gastar los créditos de la API).
+- Cambié el modelo a **Sonnet** (`/model`) y el modo a **manual** (Shift + Tab).
+- Con Claude Code convertí la carpeta en **repositorio de Git** e hice mi
+  **primer commit**: "Configuración inicial del proyecto".
+
+### Qué aprendí
+- **API vs plan Pro:** la API es el "cerebro" de mi agente y se paga por uso
+  (prepago). El plan Pro es para el asistente que me ayuda a programar.
+- **Tokens:** pedacitos de palabras. Me cobran por lo que mando y lo que recibo.
+- **Terminal = teléfono:** una terminal nueva le habla a la Mac. Si escribo
+  `claude` o `copilot`, "llamo" a ese asistente.
+- **Manual mode:** Claude Code me pide permiso antes de cada acción. Así veo y aprendo.
+- **Commit:** un punto de guardado con un código único (el mío: `ec0226c`).
+
+### Problemas y cómo los resolví
+- **Me confundía si estaba en Claude, Copilot o la terminal normal.**
+  → Una terminal nueva es "ninguno"; reviso las señales (logo, modelo, modo).
+- **Con `cd ..` me salí del proyecto sin darme cuenta.**
+  → Antes de abrir un asistente reviso que la línea diga `agente-investigador %`.
