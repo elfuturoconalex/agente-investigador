@@ -57,3 +57,55 @@
   → Una terminal nueva es "ninguno"; reviso las señales (logo, modelo, modo).
 - **Con `cd ..` me salí del proyecto sin darme cuenta.**
   → Antes de abrir un asistente reviso que la línea diga `agente-investigador %`.
+
+## Día 2 (continuación): GitHub, llaves y .env
+
+### Qué hice
+- Agregué mi proyecto a **GitHub Desktop** ("Add Existing Repository"), hice el
+  commit `Bitácora: Día 2` y lo **publiqué en GitHub** como repositorio privado.
+- Creé mi **API key de Anthropic** y la guardé en la app **Contraseñas** de mi Mac.
+- Creé mi cuenta en **Tavily** con el plan **Free** (1,000 búsquedas/mes, sin tarjeta)
+  y guardé su API key también en Contraseñas.
+- Creé el archivo **`.env`** con mis dos llaves y confirmé con `git status`
+  que Git lo ignora ("working tree clean").
+
+### Qué aprendí
+- **History en GitHub Desktop:** es mi "máquina del tiempo"; ahí veo cada commit,
+  quién lo hizo y qué cambió (verde = agregado, rojo = quitado).
+- **`.gitignore`:** una "lista negra" para Git. Por eso `.venv` y `.env`
+  nunca se suben. En VS Code esos archivos aparecen en gris.
+- **`requirements.txt`:** la "lista del súper" de mi proyecto; con ella
+  cualquiera (o AWS) recrea mi `.venv`.
+- **"M" en VS Code:** archivo modificado desde el último commit.
+- **Ciclo de trabajo:** editar → commit → push.
+
+### Problemas y cómo los resolví
+- **Expuse mi API key en una captura de pantalla.**
+  → La eliminé en la Console y creé una nueva. Ahora guardo mis llaves en la app
+  Contraseñas y no tomo capturas con llaves visibles.
+- **La app Contraseñas puso una contraseña inventada automáticamente.**
+  → La reemplacé por mi llave real y verifiqué que empezara con `sk-ant-`.
+- **Al elegir el plan de Tavily, me llevó a una pantalla de pago (Stripe).**
+  → No metí ningún dato, regresé y elegí "Continue on Free".
+- **Escribí `git status` dentro de Claude Code en vez de la terminal normal.**
+  → Funcionó igual (Claude lo ejecutó por mí), pero aprendí a distinguir ambas.
+
+### Pendiente para mañana
+- Crear y correr `hola_claude.py`: mi primera llamada a Claude desde código.
+
+## Día 3: Mi primera llamada a Claude
+
+### Qué hice
+- Creé `hola_claude.py` y lo ejecuté con `python hola_claude.py`.
+- Claude me respondió desde mi propio código: 27 tokens de entrada,
+  116 de salida (≈ $0.0006 USD con Haiku).
+
+### Qué aprendí
+- **Editor vs terminal:** arriba se escribe el código; abajo se ejecuta.
+- **Hay que guardar (Cmd + S) antes de ejecutar**, o Python lee la versión vieja.
+- **Archivo vs carpeta:** las carpetas tienen flechita (> o ⌄); los archivos no.
+- **"U" en VS Code:** archivo nuevo que Git todavía no conoce.
+- **Markdown en la terminal:** `#` y `**` se ven tal cual; en un `.md` se ven con formato.
+
+### Problemas y cómo los resolví
+- **VS Code me sugirió instalar PowerShell.** → No hace falta en Mac; lo cerré.
