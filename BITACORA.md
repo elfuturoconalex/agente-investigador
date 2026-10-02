@@ -109,3 +109,51 @@
 
 ### Problemas y cómo los resolví
 - **VS Code me sugirió instalar PowerShell.** → No hace falta en Mac; lo cerré.
+
+## Día 4: Mi agente completo (Fase 1 terminada) 🎉
+
+### Qué hice
+- Creé `buscar.py` y probé **Tavily** solo: 3 resultados reales de internet.
+- Creé `agente.py`: le di a Claude la herramienta `buscar_web` y él decidió
+  solo qué buscar.
+- Convertí `agente.py` en un **agente completo**:
+  - **Loop**: Claude puede buscar varias veces (hizo 5 búsquedas en 3 vueltas).
+  - Segunda herramienta, **`guardar_informe`**: guarda el informe en `informes/`.
+  - **Instrucciones (system)** con la fecha de hoy y el formato del informe.
+  - **Freno de seguridad**: máximo 10 vueltas.
+  - **Resumen final**: vueltas, tokens y costo.
+- Lo corrí con: `python agente.py "5 maneras de hacerte rico con agentes de IA"`
+  → 4 vueltas, 14,838 tokens de entrada, 3,046 de salida, **$0.03 USD**.
+
+### Qué aprendí
+- **Cómo funciona un agente:**
+  1. Escribo una pregunta y Python se la manda a Claude con el **menú de herramientas**.
+  2. Claude lee el menú y le pide a Python: "busca X en internet".
+  3. Python usa Tavily para buscar en la web real.
+  4. Tavily le regresa la información a Python.
+  5. Python se la pasa a Claude.
+  6. Claude escribe la respuesta final y Python me la muestra.
+- **Claude nunca toca internet**: solo piensa y pide. Mi código (el "asistente")
+  es quien ejecuta.
+- **Las 3 piezas de una herramienta**: el menú (descripción), la cocina
+  (`def`, la función real) y el mesero (el código que ejecuta lo que Claude pide).
+- **Archivo vs nombre en el código**: `buscar.py` es un archivo; `buscar_web`
+  es un nombre que solo existe dentro del código.
+- **`sys.argv`**: el tema se escribe al correr el programa, entre comillas.
+  Si no escribo nada, usa un tema de respaldo.
+- **VS Code y GitHub Desktop miran la misma carpeta**: VS Code guarda,
+  GitHub Desktop detecta los cambios y los sube con commit + push.
+- **Claude Pro vs mi agente**: Claude Pro es una herramienta para mí; mi agente
+  se conecta a otros sistemas, se automatiza y se puede vender.
+
+### Problemas y cómo los resolví
+- **Claude buscó "2024" aunque estamos en 2026.**
+  → Claude no sabe la fecha de hoy. Se la doy en las instrucciones con `date.today()`.
+- **Al final Claude preguntaba "¿Te gustaría que profundice?".**
+  → Mi agente no tiene ida y vuelta. En las instrucciones le pedí que no haga
+  preguntas y que termine guardando el informe.
+- **Confundía `buscar_web` con una carpeta.**
+  → Es solo un nombre dentro del código, no aparece en la barra izquierda.
+
+### Siguiente: Fase 2
+- Llevar el agente a AWS: Lambda + API Gateway + S3.

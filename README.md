@@ -4,7 +4,7 @@ Agente de IA que recibe un tema, busca en la web, resume la información y guard
 
 ## Fases del proyecto
 
-- [ ] **Fase 1:** Agente funcionando en local
+- [x] **Fase 1:** Agente funcionando en local
 - [ ] **Fase 2:** Desplegado en AWS (Lambda + API Gateway + S3)
 - [ ] **Fase 3:** Observabilidad (trazas, herramientas usadas y tokens consumidos)
 
