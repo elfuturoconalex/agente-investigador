@@ -157,3 +157,76 @@
 
 ### Siguiente: Fase 2
 - Llevar el agente a AWS: Lambda + API Gateway + S3.
+
+## Día 5: Mi perfil de GitHub y el inicio de la Fase 2 (AWS)
+
+### Qué hice
+
+**GitHub**
+- Agregué `informes/` al `.gitignore`: mis investigaciones se quedan en mi Mac
+  y solo el código se sube a GitHub.
+- Creé mi **perfil de GitHub** (`elfuturoconalex`) con un repositorio especial
+  del mismo nombre:
+  - `README.md`: mi presentación en inglés (versión corta).
+  - `MY-STORY.md`: mi historia completa en inglés.
+  - `MI-HISTORIA.md`: mi historia completa en español.
+- Agregué mi nombre y una bio profesional al perfil.
+
+**Fase 2, Paso 0: seguridad de la cuenta de AWS**
+- Confirmé que mi usuario **root** tiene MFA (Duo) y no tiene claves de acceso.
+- Creé una **alarma de presupuesto de $5 USD** (AWS Budgets): me avisa por correo
+  al 85%, al 100% y si el gasto previsto supera $5.
+- Creé el grupo **`administradores`** con la política `AdministratorAccess`.
+- Creé mi usuario de trabajo **`alejandro-admin`** dentro de ese grupo,
+  con **MFA** (Duo), y entré con él. Desde ahora ya no uso root para trabajar.
+
+**Fase 2, Paso 2: almacenamiento**
+- Creé el bucket de S3 `agente-investigador-informes-278311772507`
+  en `us-east-1`, con acceso público bloqueado y cifrado SSE-S3.
+
+**Fase 2, Paso 3: llaves seguras**
+- Guardé mis 2 API keys en **Parameter Store** como **SecureString**:
+  - `/agente-investigador/anthropic-api-key`
+  - `/agente-investigador/tavily-api-key`
+
+### Qué aprendí
+- **Diff en GitHub:** fondo rojo con `-` = línea quitada; fondo verde con `+` = línea agregada.
+  El color de las letras solo indica el tipo de palabra (no cambios).
+- **Root vs usuario IAM:** root es la llave maestra (puede cerrar la cuenta).
+  Se guarda para facturación y emergencias. Para el día a día uso un usuario IAM.
+- **Grupos de IAM:** los permisos se asignan a un "puesto" (grupo) y las personas
+  se agregan al grupo. Es la práctica recomendada en empresas.
+- **Regiones:** un grupo de centros de datos en un lugar del mundo. Elegí
+  `us-east-1` porque es barata, recibe novedades primero y la usan casi todos
+  los tutoriales. Regla de oro: todo el proyecto en la misma región.
+- **Bucket de S3:** el "cajón" donde se guardan archivos. Su nombre es único
+  en todo el mundo, por eso le agregué mi número de cuenta.
+- **ACL deshabilitadas:** los permisos se manejan en un solo lugar (políticas de IAM)
+  y no archivo por archivo. Es como centralizar la política en un firewall
+  en lugar de poner una ACL en cada puerto.
+- **Control de versiones:** lo dejé desactivado; cada informe tendrá fecha y hora
+  en el nombre, así nunca se sobrescribe.
+- **Cifrado:** convierte los datos en texto ilegible sin la llave.
+  En tránsito (HTTPS) y en reposo (SSE-S3). AWS lo hace gratis y automático.
+- **Parameter Store:** es el `.env` de la nube. Guarda mis llaves cifradas y
+  mi Lambda las lee solo si tiene permiso. Es gratis en su versión estándar
+  (Secrets Manager cuesta $0.40/mes por llave).
+- **Systems Manager:** la "navaja suiza" de AWS para administrar recursos;
+  Parameter Store es una de sus herramientas.
+- **Idiomas en GitHub:** perfil y README en inglés para un público internacional;
+  la bitácora en español porque es mi diario de aprendizaje.
+
+### Problemas y cómo los resolví
+- **El buscador de AWS no encontraba "Budgets".**
+  → Entré por Facturación → Monitor de costos → "Se requiere configuración".
+- **El buscador tampoco encontraba "Parameter Store".**
+  → Está dentro de Systems Manager.
+- **No encontraba el botón para crear usuarios.**
+  → Estaba en el Panel de IAM; el botón está en "Usuarios de IAM".
+- **La app Contraseñas puso una contraseña inventada al crear un elemento.**
+  → La reemplacé por la real y verifiqué cómo empezaba.
+
+### Siguiente
+- Crear `lambda_function.py` (el agente adaptado para la nube).
+- Empaquetarlo con sus librerías y crear la Lambda.
+- Crear la API con API Gateway y probar.
