@@ -150,6 +150,12 @@ No le hagas preguntas al usuario: trabaja solo y termina guardando el informe.""
                         "segundos": round(time.time() - reloj_herramienta, 1),
                     })
                     resultados.append({"type": "tool_result", "tool_use_id": bloque.id, "content": resultado})
+
+            # 💡 Mejora Fase 3: si ya guardó el informe, terminamos aquí.
+            # Así nos ahorramos una vuelta extra solo para que Claude diga "listo".
+            if any(h["nombre"] == "guardar_informe" for h in vuelta["herramientas"]):
+                break
+
             mensajes.append({"role": "user", "content": resultados})
 
         traza["estado"] = "ok"
