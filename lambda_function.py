@@ -7,12 +7,12 @@ import unicodedata
 from datetime import date, datetime, timezone
 
 import boto3
-from anthropic import Anthropic
+from anthropic.lib.bedrock import AnthropicBedrock   # Fase 4: Claude a través de Amazon Bedrock
 from tavily import TavilyClient
 
 # ---------- 0. CONFIGURACIÓN ----------
 BUCKET = os.environ["BUCKET_NAME"]   # El nombre del bucket se configura en Lambda
-MODELO = "claude-haiku-4-5"
+MODELO = "global.anthropic.claude-haiku-4-5-20251001-v1:0"   # Perfil de inferencia Global de Bedrock
 MAX_PASOS = 10                       # Freno de seguridad
 
 ssm = boto3.client("ssm")            # Para leer Parameter Store
@@ -24,7 +24,8 @@ def leer_llave(nombre):
     respuesta = ssm.get_parameter(Name=nombre, WithDecryption=True)
     return respuesta["Parameter"]["Value"]
 
-claude = Anthropic(api_key=leer_llave("/agente-investigador/anthropic-api-key"))
+# Fase 4: ya no hay llave de Claude. La Lambda entra a Bedrock con su rol de IAM.
+claude = AnthropicBedrock(aws_region="us-east-1")
 buscador = TavilyClient(api_key=leer_llave("/agente-investigador/tavily-api-key"))
 
 # ---------- 1. EL MENÚ: las herramientas que Claude puede pedir ----------
@@ -108,6 +109,7 @@ No le hagas preguntas al usuario: trabaja solo y termina guardando el informe.""
         "tema": tema,
         "informe": clave,
         "modelo": MODELO,
+        "proveedor": "bedrock",
         "inicio": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "estado": "en curso",
         "vueltas": [],

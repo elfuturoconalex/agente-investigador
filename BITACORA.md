@@ -293,3 +293,33 @@
 ### Siguiente
 - Agente #2.
 
+## Día 8: Claude a través de Amazon Bedrock (Fase 4)
+*8 de octubre de 2026*
+
+### Qué hice
+- Probé Claude Haiku 4.5 en el **Playground de Bedrock** y llené el formulario de uso de Anthropic (se pide una sola vez por cuenta).
+- Esperé la **verificación de la cuenta** para usar Bedrock (la primera vez tarda hasta 2 horas).
+- Agregué al rol de la Lambda el permiso `bedrock:InvokeModel`, solo para Claude Haiku 4.5.
+- Cambié el código: `AnthropicBedrock` en lugar de `Anthropic`, y el modelo ahora es el perfil Global.
+- Probé con el mismo tema y comparé la traza con la de Anthropic directo.
+- Borré la llave de Claude de Parameter Store, porque ya no se usa.
+- Actualicé el README y el diagrama de arquitectura.
+
+### Qué aprendí
+- **Amazon Bedrock:** la "tienda de modelos" de AWS. Usas Claude (y otros modelos) con tu cuenta, tus permisos y tu factura de AWS.
+- **Perfil de inferencia:** por dónde viaja la pregunta. **Global** = más disponibilidad y mejor precio; **US** = los datos se quedan en EE. UU.
+- **Autenticación con rol de IAM:** sin llaves que guardar. Una credencial menos que se pueda filtrar.
+- **Mínimo privilegio también para modelos:** el permiso solo deja usar Haiku 4.5, no modelos más caros.
+- **Validar costos contra la factura:** la traza calcula el costo con un precio fijo; hay que confirmarlo en Billing.
+
+### Resultados
+- Mismo comportamiento (3 vueltas, 5 búsquedas) y mismo tiempo (~32 s).
+- Costo calculado: $0.0199 (Anthropic) contra $0.0206 (Bedrock). La diferencia viene del largo del informe.
+
+### Problemas y cómo los resolví
+- **AccessDeniedException: la cuenta se estaba verificando** → no era un error mío; esperé a que AWS terminara.
+
+### Siguiente
+- Revisar en Billing el costo real de Bedrock.
+- Agente #2: soporte interno con RAG.
+
