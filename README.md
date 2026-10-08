@@ -67,14 +67,15 @@ La API responde al instante con el nombre del informe, y el agente trabaja en se
 
 ## Arquitectura en AWS
 
-```
-curl → API Gateway → Lambda (responde "recibido")
-                       ↓ se llama a sí misma en segundo plano
-                     Lambda → Parameter Store (llaves cifradas)
-                            → Claude + Tavily (investigación)
-                            → S3 (guarda el informe .md y su traza .json)
-                            → CloudWatch Logs (renglón TRAZA para reportes)
-```
+![Arquitectura del Agente Investigador](docs/arquitectura.svg)
+
+1. El usuario manda el tema con `curl`.
+2. API Gateway pasa la solicitud a la Lambda.
+3. La Lambda responde al instante y se llama a sí misma en segundo plano.
+4. Lee las llaves cifradas de Parameter Store.
+5. Investiga con Claude (piensa y escribe) y Tavily (busca en la web).
+6. Guarda el informe `.md` y su traza `.json` en S3.
+7. Deja los logs en CloudWatch, incluido un renglón `TRAZA` para los reportes.
 
 ## Observabilidad
 
