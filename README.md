@@ -53,7 +53,7 @@ El informe se guarda en la carpeta `informes/`.
 En varios renglones:
 
 ```bash
-curl -X POST https://<TU-API>.execute-api.us-east-1.amazonaws.com/investigar \
+curl -X POST https://<MI-API>.execute-api.us-east-1.amazonaws.com/investigar \
   -H "Content-Type: application/json" \
   -d '{"tema": "el tema que quieras"}'
 ```
@@ -61,7 +61,7 @@ curl -X POST https://<TU-API>.execute-api.us-east-1.amazonaws.com/investigar \
 O en un solo renglón:
 
 ```bash
-curl -X POST https://<TU-API>.execute-api.us-east-1.amazonaws.com/investigar -H "Content-Type: application/json" -d '{"tema": "el tema que quieras"}'
+curl -X POST https://<MI-API>.execute-api.us-east-1.amazonaws.com/investigar -H "Content-Type: application/json" -d '{"tema": "el tema que quieras"}'
 ```
 
 La API responde al instante con el nombre del informe, y el agente trabaja en segundo plano. El informe se guarda en S3, en la carpeta `informes/`.

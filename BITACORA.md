@@ -110,7 +110,7 @@
 ### Problemas y cómo los resolví
 - **VS Code me sugirió instalar PowerShell.** → No hace falta en Mac; lo cerré.
 
-## Día 4: Mi agente completo (Fase 1 terminada) 🎉
+## Día 4: Mi agente completo (Fase 1 terminada) 
 
 ### Qué hice
 - Creé `buscar.py` y probé **Tavily** solo: 3 resultados reales de internet.
