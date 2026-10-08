@@ -4,3 +4,4 @@
 informes/
 paquete/
 *.zip
+__pycache__/

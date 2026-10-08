@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import time
 import base64
 import unicodedata
 from datetime import date, datetime, timezone
@@ -78,7 +79,21 @@ def ejecutar_herramienta(nombre, datos, clave):
         return guardar_informe(clave, datos["contenido"])
     return f"No conozco la herramienta {nombre}"
 
-# ---------- 3. EL LOOP: el corazón del agente (igual que en tu Mac) ----------
+# ---------- 3. LA TRAZA: la "bitácora de vuelo" de cada investigación (Fase 3) ----------
+def calcular_costo(tokens_entrada, tokens_salida):
+    """Precio de Haiku 4.5: $1 por millón de tokens de entrada y $5 por millón de salida."""
+    return tokens_entrada * 1 / 1_000_000 + tokens_salida * 5 / 1_000_000
+
+def guardar_traza(clave, traza):
+    """Guarda la traza en S3, al lado del informe, con el mismo nombre pero .json."""
+    s3.put_object(
+        Bucket=BUCKET,
+        Key=clave.replace(".md", ".json"),
+        Body=json.dumps(traza, ensure_ascii=False, indent=2).encode("utf-8"),
+        ContentType="application/json; charset=utf-8",
+    )
+
+# ---------- 4. EL LOOP: el corazón del agente, ahora anotando todo ----------
 def investigar(tema, clave):
     instrucciones = f"""Eres un agente de investigación. Hoy es {date.today()}.
 Investiga el tema que te den usando buscar_web (puedes buscar varias veces, máximo 5).
@@ -87,35 +102,85 @@ título, resumen, hallazgos principales y fuentes (con sus links).
 No le hagas preguntas al usuario: trabaja solo y termina guardando el informe."""
 
     mensajes = [{"role": "user", "content": f"Investiga este tema: {tema}"}]
-    tokens_entrada = 0
-    tokens_salida = 0
 
+    # 📒 La traza empieza vacía y se va llenando en cada vuelta
+    traza = {
+        "tema": tema,
+        "informe": clave,
+        "modelo": MODELO,
+        "inicio": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "estado": "en curso",
+        "vueltas": [],
+    }
+    reloj_total = time.time()
     print(f"🤖 Investigando: {tema}")
 
-    for paso in range(1, MAX_PASOS + 1):
-        respuesta = claude.messages.create(
-            model=MODELO, max_tokens=4000,
-            system=instrucciones, tools=herramientas, messages=mensajes,
-        )
-        tokens_entrada += respuesta.usage.input_tokens
-        tokens_salida += respuesta.usage.output_tokens
-        mensajes.append({"role": "assistant", "content": respuesta.content})
+    try:
+        for paso in range(1, MAX_PASOS + 1):
+            reloj_claude = time.time()
+            respuesta = claude.messages.create(
+                model=MODELO, max_tokens=4000,
+                system=instrucciones, tools=herramientas, messages=mensajes,
+            )
+            # 📝 Anotamos lo que pasó en esta vuelta
+            vuelta = {
+                "numero": paso,
+                "segundos_claude": round(time.time() - reloj_claude, 1),
+                "tokens_entrada": respuesta.usage.input_tokens,
+                "tokens_salida": respuesta.usage.output_tokens,
+                "costo_usd": round(calcular_costo(respuesta.usage.input_tokens, respuesta.usage.output_tokens), 5),
+                "herramientas": [],
+            }
+            traza["vueltas"].append(vuelta)
+            mensajes.append({"role": "assistant", "content": respuesta.content})
 
-        if respuesta.stop_reason != "tool_use":
-            break
+            if respuesta.stop_reason != "tool_use":
+                break
 
-        print(f"🔁 Vuelta {paso}")
-        resultados = []
-        for bloque in respuesta.content:
-            if bloque.type == "tool_use":
-                resultado = ejecutar_herramienta(bloque.name, bloque.input, clave)
-                resultados.append({"type": "tool_result", "tool_use_id": bloque.id, "content": resultado})
-        mensajes.append({"role": "user", "content": resultados})
+            print(f"🔁 Vuelta {paso}")
+            resultados = []
+            for bloque in respuesta.content:
+                if bloque.type == "tool_use":
+                    reloj_herramienta = time.time()
+                    resultado = ejecutar_herramienta(bloque.name, bloque.input, clave)
+                    # 📝 Anotamos qué herramienta usó, qué buscó y cuánto tardó
+                    vuelta["herramientas"].append({
+                        "nombre": bloque.name,
+                        "consulta": bloque.input.get("consulta", ""),
+                        "segundos": round(time.time() - reloj_herramienta, 1),
+                    })
+                    resultados.append({"type": "tool_result", "tool_use_id": bloque.id, "content": resultado})
+            mensajes.append({"role": "user", "content": resultados})
 
-    costo = tokens_entrada * 1 / 1_000_000 + tokens_salida * 5 / 1_000_000
-    print(f"✅ Listo | Vueltas: {paso} | Tokens: {tokens_entrada} entrada, {tokens_salida} salida | Costo: ${costo:.4f} USD")
+        traza["estado"] = "ok"
 
-# ---------- 4. UTILIDADES ----------
+    except Exception as error:
+        # Si algo falla, lo anotamos en la traza en lugar de perderlo
+        traza["estado"] = "error"
+        traza["error"] = str(error)
+        print(f"❌ Error: {error}")
+
+    finally:
+        # 🧮 Totales: se calculan siempre, aunque haya habido error
+        entrada = sum(v["tokens_entrada"] for v in traza["vueltas"])
+        salida = sum(v["tokens_salida"] for v in traza["vueltas"])
+        traza["totales"] = {
+            "vueltas": len(traza["vueltas"]),
+            "busquedas": sum(1 for v in traza["vueltas"] for h in v["herramientas"] if h["nombre"] == "buscar_web"),
+            "tokens_entrada": entrada,
+            "tokens_salida": salida,
+            "costo_usd": round(calcular_costo(entrada, salida), 4),
+            "segundos": round(time.time() - reloj_total, 1),
+        }
+        guardar_traza(clave, traza)
+        t = traza["totales"]
+        print(f"✅ {traza['estado']} | Vueltas: {t['vueltas']} | Búsquedas: {t['busquedas']} | "
+              f"Tokens: {t['tokens_entrada']} entrada, {t['tokens_salida']} salida | "
+              f"Costo: ${t['costo_usd']} USD | {t['segundos']} s")
+        # Un renglón en JSON para CloudWatch: así después podemos sumar y sacar promedios
+        print("TRAZA " + json.dumps({"tema": tema, "estado": traza["estado"], **t}, ensure_ascii=False))
+
+# ---------- 5. UTILIDADES ----------
 def nombre_seguro(texto):
     """Convierte 'IA en Medicina' en 'ia-en-medicina' para usarlo como nombre de archivo."""
     texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
@@ -128,7 +193,7 @@ def respuesta_http(codigo, datos):
         "body": json.dumps(datos, ensure_ascii=False),
     }
 
-# ---------- 5. LA PUERTA DE ENTRADA: lo que Lambda ejecuta ----------
+# ---------- 6. LA PUERTA DE ENTRADA: lo que Lambda ejecuta ----------
 def lambda_handler(event, context):
     # Caso A: llega una petición desde la API → responder rápido y trabajar en segundo plano
     if "body" in event:

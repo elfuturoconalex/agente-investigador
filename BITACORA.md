@@ -230,3 +230,32 @@
 - Crear `lambda_function.py` (el agente adaptado para la nube).
 - Empaquetarlo con sus librerías y crear la Lambda.
 - Crear la API con API Gateway y probar.
+
+## Día 6: Mi agente vive en la nube (Fase 2 completa)
+*5 y 6 de octubre de 2026*
+
+### Qué hice
+- Creé `lambda_function.py`: el mismo agente, adaptado para AWS (lee llaves de Parameter Store y guarda informes en S3).
+- Empaqueté el código con sus librerías en un zip y agregué `paquete/` y `*.zip` al `.gitignore`.
+- Creé la Lambda `agente-investigador` (Python 3.12) con 5 minutos de tiempo máximo y la variable `BUCKET_NAME`.
+- Le di solo 3 permisos: leer mis llaves, guardar en S3 y llamarse a sí misma.
+- Creé una HTTP API en API Gateway con la ruta `POST /investigar` y le puse límite de solicitudes (throttling).
+- La probé con `curl` y el informe llegó a S3.
+- Actualicé el README e hice el commit "Fase 2 completa: agente en AWS".
+
+### Qué aprendí
+- **Lambda:** código que solo se ejecuta cuando alguien lo llama; pago solo por los segundos que trabaja.
+- **Rol de IAM:** el "gafete" de la Lambda; dice a qué puertas puede entrar.
+- **API Gateway:** la "recepción" que recibe solicitudes de internet y se las pasa a la Lambda.
+- **Throttling:** límite de solicitudes por segundo, como QoS.
+- **Patrón tintorería:** la API solo espera ~30 segundos, así que la Lambda entrega un "ticket" al instante y trabaja en segundo plano.
+- **curl:** un "navegador" de la Terminal para enviar solicitudes.
+- **Costo:** AWS casi $0; Claude unos $0.03 por informe.
+
+### Problemas y cómo los resolví
+- El campo de integración tenía un texto extra ("X$") → lo borré y elegí la Lambda de la lista.
+- No sabía dónde estaba la URL de mi API → API Gateway → Stages → $default → Invoke URL.
+- El README se veía mal → sobraban unas comillas de código y un párrafo repetido; los borré.
+
+### Siguiente
+- Fase 3: observabilidad (búsquedas, vueltas, herramientas, tokens y costo de cada informe).
