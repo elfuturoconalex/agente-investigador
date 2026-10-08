@@ -181,7 +181,7 @@
   con **MFA** (Duo), y entré con él. Desde ahora ya no uso root para trabajar.
 
 **Fase 2, Paso 2: almacenamiento**
-- Creé el bucket de S3 `agente-investigador-informes-278311772507`
+- Creé el bucket de S3 `agente-investigador-informes-XXXXXXXXXXXX`
   en `us-east-1`, con acceso público bloqueado y cifrado SSE-S3.
 
 **Fase 2, Paso 3: llaves seguras**
