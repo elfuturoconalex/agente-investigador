@@ -6,7 +6,7 @@ Agente de IA que recibe un tema, busca en la web, resume la información y guard
 
 - [x] **Fase 1:** Agente funcionando en local
 - [x] **Fase 2:** Desplegado en AWS (Lambda + API Gateway + S3)
-- [ ] **Fase 3:** Observabilidad (trazas, herramientas usadas y tokens consumidos)
+- [x] **Fase 3:** Observabilidad (trazas, herramientas usadas, tokens y costo)
 
 ## Requisitos
 
@@ -72,5 +72,41 @@ curl → API Gateway → Lambda (responde "recibido")
                        ↓ se llama a sí misma en segundo plano
                      Lambda → Parameter Store (llaves cifradas)
                             → Claude + Tavily (investigación)
-                            → S3 (guarda el informe)
+                            → S3 (guarda el informe .md y su traza .json)
+                            → CloudWatch Logs (renglón TRAZA para reportes)
+```
+
+## Observabilidad
+
+Cada investigación guarda una **traza** en S3, al lado del informe y con el mismo nombre, pero `.json`. Por cada vuelta registra:
+
+- segundos que tardó Claude
+- tokens de entrada y salida, y costo en USD
+- herramientas usadas, qué buscó y cuánto tardó cada una
+
+También guarda los totales (vueltas, búsquedas, tokens, costo y segundos) y el estado (`ok` o `error`).
+
+### Optimización encontrada con las trazas
+
+La primera traza mostró una vuelta extra **después** de guardar el informe, solo para que Claude dijera "listo". Esa vuelta reenviaba todo el informe y costaba ~27% del total. Ahora el agente termina en cuanto guarda el informe.
+
+| | Antes (4 vueltas) | Después (3 vueltas) | Cambio |
+|---|---|---|---|
+| Costo promedio por informe | $0.0274 | $0.0214 | **−22%** |
+| Tokens de entrada promedio | 12,989 | 7,689 | **−41%** |
+| Segundos promedio | 34.7 | 33.9 | −2% |
+
+*Medido con CloudWatch Logs Insights: 1 informe antes y 4 después.*
+
+### Reporte de costo (CloudWatch Logs Insights)
+
+Grupo de logs: `/aws/lambda/agente-investigador`
+
+```
+filter @message like /TRAZA/
+| parse @message /"vueltas": (?<vueltas>\d+)/
+| parse @message /"tokens_entrada": (?<entrada>\d+)/
+| parse @message /"costo_usd": (?<costo>[\d.]+)/
+| parse @message /"segundos": (?<segundos>[\d.]+)/
+| stats count() as informes, avg(costo) as costo_promedio, sum(costo) as costo_total, avg(entrada) as tokens_entrada_promedio, avg(segundos) as segundos_promedio by vueltas
 ```

@@ -259,3 +259,37 @@
 
 ### Siguiente
 - Fase 3: observabilidad (búsquedas, vueltas, herramientas, tokens y costo de cada informe).
+
+## Día 7: Observabilidad (Fase 3 completa)
+*7 y 8 de octubre de 2026*
+
+### Qué hice
+- Revisé los logs de mi Lambda en CloudWatch para ver qué registraba ya el agente.
+- Agregué una **traza** a `lambda_function.py`: en cada vuelta anota segundos, tokens, costo y herramientas usadas.
+- La traza se guarda en S3 como `.json`, al lado de cada informe, y se guarda aunque haya un error.
+- Empaqueté de nuevo, subí el zip a la Lambda y probé con `curl`.
+- Con la primera traza encontré una **vuelta inútil**: después de guardar el informe, Claude solo decía "listo".
+- Hice que el agente termine en cuanto guarda el informe y lo comprobé con una traza nueva.
+- Usé **CloudWatch Logs Insights** para sacar promedios de todos los informes, y guardé la consulta como `costo-por-informe`.
+
+### Qué aprendí
+- **Observabilidad:** poder ver qué hizo el sistema sin adivinar. Como NetFlow o syslog, pero para un agente.
+- **Traza:** la "bitácora de vuelo" de cada investigación.
+- **La API de Claude no tiene memoria:** en cada vuelta se reenvía toda la conversación, por eso los tokens de entrada crecen.
+- **Los tokens de salida cuestan 5 veces más:** la vuelta más cara es cuando Claude escribe el informe.
+- **try / except / finally:** intentar, anotar el error si algo falla y, pase lo que pase, guardar la traza.
+- **Logs Insights:** un "Excel para logs" que filtra, extrae números y saca promedios.
+- **Medir antes de optimizar:** primero los datos, luego el cambio, y después comprobar con más de una muestra.
+
+### Resultados
+- Costo promedio por informe: **$0.0274 → $0.0214 (−22%)**.
+- Tokens de entrada promedio: **12,989 → 7,689 (−41%)**.
+- Con 1 dólar puedo generar unos 45 informes.
+
+### Problemas y cómo los resolví
+- La consulta de Logs Insights solo mostraba la última hora → cambié `START=-3600s` por `START=-604800s` (una semana).
+- El `.gitignore` no tenía `__pycache__/` → lo agregué.
+
+### Siguiente
+- Agente #2.
+
