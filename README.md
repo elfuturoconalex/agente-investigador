@@ -68,7 +68,7 @@ La API responde al instante con el nombre del informe, y el agente trabaja en se
 
 ## Arquitectura en AWS
 
-![Arquitectura del Agente Investigador](docs/arquitectura.svg)
+![Arquitectura del Agente Investigador](docs/arquitectura-aws.png)
 
 1. El usuario manda el tema con `curl`.
 2. API Gateway pasa la solicitud a la Lambda.
