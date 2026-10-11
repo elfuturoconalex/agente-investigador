@@ -5,3 +5,6 @@ informes/
 paquete/
 *.zip
 __pycache__/
+
+# PDFs de la bitácora (no se suben a GitHub)
+docs/bitacora/

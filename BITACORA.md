@@ -1,6 +1,8 @@
 # Bitácora de aprendizaje
 
-## Día 1: Preparar mi Mac (Fase 0)
+Diario de aprendizaje por sesión de trabajo: cada sesión es de 1 a 2 horas y puede abarcar varios días.
+
+## Sesión 1: Preparar mi Mac (Fase 0)
 
 ### Qué hice
 - Instalé **Homebrew**, un instalador de programas desde la terminal.
@@ -32,7 +34,7 @@
 - **No veía `.venv` ni `.gitignore` en Finder.**
   → macOS esconde los archivos que empiezan con punto. En VS Code sí aparecen.
 
-## Día 2: Claude Code, API y Git
+## Sesión 2: Claude Code, API y Git
 
 ### Qué hice
 - Creé mi cuenta en la **Claude Console**, cargué USD 5 de crédito y dejé
@@ -58,7 +60,7 @@
 - **Con `cd ..` me salí del proyecto sin darme cuenta.**
   → Antes de abrir un asistente reviso que la línea diga `agente-investigador %`.
 
-## Día 2 (continuación): GitHub, llaves y .env
+## Sesión 2 (continuación): GitHub, llaves y .env
 
 ### Qué hice
 - Agregué mi proyecto a **GitHub Desktop** ("Add Existing Repository"), hice el
@@ -93,7 +95,7 @@
 ### Pendiente para mañana
 - Crear y correr `hola_claude.py`: mi primera llamada a Claude desde código.
 
-## Día 3: Mi primera llamada a Claude
+## Sesión 3: Mi primera llamada a Claude
 
 ### Qué hice
 - Creé `hola_claude.py` y lo ejecuté con `python hola_claude.py`.
@@ -110,7 +112,7 @@
 ### Problemas y cómo los resolví
 - **VS Code me sugirió instalar PowerShell.** → No hace falta en Mac; lo cerré.
 
-## Día 4: Mi agente completo (Fase 1 terminada) 
+## Sesión 4: Mi agente completo (Fase 1 terminada) 
 
 ### Qué hice
 - Creé `buscar.py` y probé **Tavily** solo: 3 resultados reales de internet.
@@ -158,7 +160,7 @@
 ### Siguiente: Fase 2
 - Llevar el agente a AWS: Lambda + API Gateway + S3.
 
-## Día 5: Mi perfil de GitHub y el inicio de la Fase 2 (AWS)
+## Sesión 5: Mi perfil de GitHub y el inicio de la Fase 2 (AWS)
 
 ### Qué hice
 
@@ -231,7 +233,7 @@
 - Empaquetarlo con sus librerías y crear la Lambda.
 - Crear la API con API Gateway y probar.
 
-## Día 6: Mi agente vive en la nube (Fase 2 completa)
+## Sesión 6: Mi agente vive en la nube (Fase 2 completa)
 *5 y 6 de octubre de 2026*
 
 ### Qué hice
@@ -260,7 +262,7 @@
 ### Siguiente
 - Fase 3: observabilidad (búsquedas, vueltas, herramientas, tokens y costo de cada informe).
 
-## Día 7: Observabilidad (Fase 3 completa)
+## Sesión 7: Observabilidad (Fase 3 completa)
 *7 y 8 de octubre de 2026*
 
 ### Qué hice
@@ -293,7 +295,7 @@
 ### Siguiente
 - Agente #2.
 
-## Día 8: Claude a través de Amazon Bedrock (Fase 4)
+## Sesión 8: Claude a través de Amazon Bedrock (Fase 4)
 *8 de octubre de 2026*
 
 ### Qué hice
