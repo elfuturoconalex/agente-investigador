@@ -2,12 +2,26 @@
 
 Agente de IA que recibe un tema, busca en la web, resume la información y guarda un informe estructurado.
 
+> **English summary:** AI research agent that searches the web and writes a sourced report. Runs on AWS (Lambda, API Gateway, S3, Parameter Store) with Claude Haiku 4.5 on Amazon Bedrock via a least-privilege IAM role (no API key). Traces every run (tokens, cost, tools); using those traces I cut the cost per report by 22%.
+
 ## Fases del proyecto
 
 - [x] **Fase 1:** Agente funcionando en local
 - [x] **Fase 2:** Desplegado en AWS (Lambda + API Gateway + S3)
 - [x] **Fase 3:** Observabilidad (trazas, herramientas usadas, tokens y costo)
 - [x] **Fase 4:** Claude a través de Amazon Bedrock (sin llave de Anthropic)
+
+## Qué demuestra este proyecto
+
+- **Agente con herramientas:** Claude decide qué buscar, cuántas veces y cuándo terminar (el bucle del agente).
+- **Arquitectura asíncrona:** la API responde al instante y el trabajo pesado corre en segundo plano.
+- **Seguridad:** la llave de Tavily va cifrada en Parameter Store; Claude se usa con un rol de IAM de mínimo privilegio, sin llave.
+- **Observabilidad y costo medido:** cada informe deja una traza con vueltas, tokens, costo y tiempos. Con ellas encontré una vuelta innecesaria y bajé el costo **22%**.
+- **Criterio de arquitecto:** decisión documentada de perfil de inferencia Global vs. US según la residencia de datos.
+
+### Lección y siguiente mejora
+
+Al revisar sus informes vi que, si no se le exige, **la IA rellena con datos que no responden la pregunta**. Siguiente mejora: que cada dato lleve su fuente al lado, que marque lo que se contradice y que diga **"no encontré esto"** en lugar de rellenar (el mismo principio del "no lo sé" del [Agente de Soporte](https://github.com/elfuturoconalex/agente-soporte-interno)).
 
 ## Requisitos
 
